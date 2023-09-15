@@ -11,7 +11,7 @@ gdf = gpd.read_file(fileName)
 
 m = folium.Map(location = (45.404028, -75.544722), zoom_start = 12)
 
-
+st.write(gdf)
 
 
 folium_static(m)
