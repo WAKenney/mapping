@@ -8,7 +8,7 @@ from streamlit_folium import folium_static
 st.write("Test")
 
 #get the share link for the data file form one drive and past below
-onedrive_link = 'https://1drv.ms/u/s!Alu-nJHZ-vTw1gZM_jZm6VqK98Ga?e=EK9Z6b'
+onedrive_link = 'https://1drv.ms/u/s!Alu-nJHZ-vTw8wUirrIMsP5SxVPS?e=nyljiN'
 
 
 @st.cache_data(show_spinner=False)
@@ -22,12 +22,12 @@ def load_onedrive (onedrive_link):
 
 fileName = load_onedrive(onedrive_link)
 
-
-
-
 gdf = gpd.read_file(fileName)
 
 m = folium.Map(location = (45.404028, -75.544722), zoom_start = 12)
+
+folium.GeoJson(gdf, name = 'Priorities').add_to(m)
+
 
 st.write(gdf)
 
