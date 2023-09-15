@@ -16,4 +16,5 @@ st.write("Test")
 m = folium.Map(location = (45.404028, -75.544722), zoom_start = 12)
 
 
+
 folium_static(m)
