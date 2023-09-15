@@ -143,7 +143,10 @@ def mapIt(df):
     df.to_json()
     m = folium.Map(location = (45.404028, -75.544722), zoom_start = 12)
 
-    folium.GeoJson(df, name = 'Priorities').add_to(m)
+    gjson = folium.GeoJson(df, name = 'Priorities').add_to(m)
+
+    folium.GeoJsonTooltip(fields = ["PIN", "Ownership", "Hectares", "Priority", 
+                                    "Ag(%)", "Is(%)", "Vacant(%)", "AgCapabili"]).add_to(gjson)
 
     folium_static(m)
 
