@@ -7,13 +7,13 @@ from streamlit_folium import folium_static
 
 st.write("Test")
 
+#get the share link for the data file form one drive and past below
+onedrive_link = 'https://1drv.ms/u/s!Alu-nJHZ-vTw1gZM_jZm6VqK98Ga?e=EK9Z6b'
+
 
 @st.cache_data(show_spinner=False)
 def load_onedrive (onedrive_link):
-        
-    #get the share link for the data file form one drive and past below
-    onedrive_link = 'https://1drv.ms/u/s!Alu-nJHZ-vTw1gZM_jZm6VqK98Ga?e=EK9Z6b'
-
+           
     # this converts the share link from above to a file name readable by pandas etc.
     data_bytes64 = base64.b64encode(bytes(onedrive_link, 'utf-8'))
     data_bytes64_String = data_bytes64.decode('utf-8').replace('/','_').replace('+','-').rstrip("=")
