@@ -6,13 +6,11 @@ from streamlit_folium import folium_static
 
 st.write("Test")
 
-# df = gpd.read_file(r"FCFPlantingPriority021221.gpkg")
-
-# st.write(df.head(2)) 
-
-# fcfMap = df.explore("LU_2015", cmap="Blues")
+fileName = r"E:\FCFGIS\FCFPlantingPriority021221.gpkg"
+gdf = gpd.read_file(fileName)
 
 m = folium.Map(location = (45.404028, -75.544722), zoom_start = 12)
+
 
 
 
