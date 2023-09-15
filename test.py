@@ -148,6 +148,20 @@ def mapIt(df):
     folium.GeoJsonTooltip(fields = ["PIN", "Ownership", "Hectares", "Priority", 
                                     "Ag(%)", "Is(%)", "Vacant(%)", "AgCapabili"]).add_to(gjson)
 
+    #have an ESRI satellite image as an optional base map
+    folium.TileLayer(
+        tiles = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+        attr = 'Esri',
+        name = 'Satellite',
+        overlay = False,
+        control = True
+       ).add_to(m)
+
+    # add a fullscreen option and layer control to the map
+    Fullscreen().add_to(m)
+    folium.LayerControl().add_to(m)
+    
+    
     folium_static(m)
 
 mapIt(filtdf)
