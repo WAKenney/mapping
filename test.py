@@ -1,14 +1,11 @@
 import base64
-import geopandas as gpd
-import streamlit as st
 import folium
 from folium.plugins import Fullscreen
+import geopandas as gpd
+import pandas as pd
+import streamlit as st
 from streamlit_folium import folium_static
 
-from st_aggrid import AgGrid
-from st_aggrid.grid_options_builder import GridOptionsBuilder
-from st_aggrid.shared import JsCode
-from st_aggrid.shared import GridUpdateMode
 
 st.write("Test")
 
@@ -29,43 +26,23 @@ fileName = load_onedrive(onedrive_link)
 
 gdf = gpd.read_file(fileName)
 
-AgGrid(gdf)
+gdf
 
+filt = 'Medium'
 
-# def aggFilter(agData):
-    
-#     """ This function sets up the grid to view and filter the data"""
-    
-#     df = agData.copy()
+filterButton = st.button("Filter data?")
 
-#     gb = GridOptionsBuilder.from_dataframe(df)
-#     gb.configure_pagination(enabled=True)
-#     gb.configure_default_column(editable=True, filter=True)
-
-
-#     gridOptions = gb.build()
-
-#     gridReturn = AgGrid(df,
-#         gridOptions=gridOptions,
-#         allow_unsafe_jscode=True,
-#         height = 500, 
-#         theme = 'streamlit',
-#         enable_enterprise_modules=True, # enables right click and fancy features - can add license key as another parameter (license_key='string') if you have one
-#         key='select_grid', # stops grid from re-initialising every time the script is run
-#         reload_data=True, # allows modifications to loaded_data to update this same grid entity
-#         update_mode=GridUpdateMode.MANUAL,
-#         data_return_mode="FILTERED_AND_SORTED")
-
-#     gridReturnData = gridReturn['data']
+select_gdf = gdf.loc[gdf['Priority'] == filt]
 
 
 
-m = folium.Map(location = (45.404028, -75.544722), zoom_start = 12)
+def mapIt(df):
+# Create and show the map
+    df.to_json()
+    m = folium.Map(location = (45.404028, -75.544722), zoom_start = 12)
 
-folium.GeoJson(gdf, name = 'Priorities').add_to(m)
+    folium.GeoJson(df, name = 'Priorities').add_to(m)
 
+    folium_static(m)
 
-st.write(gdf)
-
-
-folium_static(m)
+mapIt(select_gdf)
