@@ -13,27 +13,42 @@ st.write("Test")
 onedrive_link = 'https://1drv.ms/u/s!Alu-nJHZ-vTw8wUirrIMsP5SxVPS?e=nyljiN'
 
 
-@st.cache_data(show_spinner=False)
-def load_onedrive (onedrive_link):
-           
-    # this converts the share link from above to a file name readable by pandas etc.
-    data_bytes64 = base64.b64encode(bytes(onedrive_link, 'utf-8'))
-    data_bytes64_String = data_bytes64.decode('utf-8').replace('/','_').replace('+','-').rstrip("=")
-    resultUrl = f"https://api.onedrive.com/v1.0/shares/u!{data_bytes64_String}/root/content"
-    return resultUrl
+@st.cache_data(show_spinner=True)
+def getData():
+    def load_onedrive (onedrive_link):
+            
+        # this converts the share link from above to a file name readable by pandas etc.
+        data_bytes64 = base64.b64encode(bytes(onedrive_link, 'utf-8'))
+        data_bytes64_String = data_bytes64.decode('utf-8').replace('/','_').replace('+','-').rstrip("=")
+        resultUrl = f"https://api.onedrive.com/v1.0/shares/u!{data_bytes64_String}/root/content"
+        return resultUrl
 
-fileName = load_onedrive(onedrive_link)
+    fileName = load_onedrive(onedrive_link)
 
-gdf = gpd.read_file(fileName)
+    gdf = gpd.read_file(fileName)
 
-gdf
+    return gdf
 
-filt = 'Medium'
+gdf = getData()
+select_gdf = gdf
 
-filterButton = st.button("Filter data?")
+with st.form('Filter Data'):
 
-select_gdf = gdf.loc[gdf['Priority'] == filt]
+    param = st.selectbox("Select a parameter for your query.", gdf.columns)
+    submitted = st.form_submit_button("Submit")
+    
+    if submitted:
+        st.write("Your data will be filtered by " + param)
 
+with st.form('Filter Data2'):
+
+    val = st.selectbox('Select a value.', gdf[param].unique())
+    
+    submitted = st.form_submit_button("Submit")
+    
+    if submitted:
+        st.write("You are filtering " + param + " by " + val)
+        select_gdf = gdf.loc[gdf[param] == val]
 
 
 def mapIt(df):
