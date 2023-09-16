@@ -121,7 +121,6 @@ def filter_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 
     return df
 
-
 filtdf = filter_dataframe(gdf) 
 
 def mapIt(df):
@@ -142,7 +141,7 @@ def mapIt(df):
         overlay = False,
         control = True
        ).add_to(m)
-
+    
     # add a fullscreen option and layer control to the map
     Fullscreen().add_to(m)
     folium.LayerControl().add_to(m)
