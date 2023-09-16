@@ -121,6 +121,7 @@ def filter_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 
     st.download_button("Download filtered data as a csv file",
                        df.to_csv(),
+                       file_name = "Filtered_data",
                        mime = 'text/csv')
 
    
