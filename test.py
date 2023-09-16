@@ -15,6 +15,7 @@ from pandas.api.types import (
 
 
 st.header("Priorities in the South Nation Watershed")
+screen1 = st.empty()
 
 #get the share link for the data file form one drive and past below
 onedrive_link = 'https://1drv.ms/u/s!Alu-nJHZ-vTw8wUirrIMsP5SxVPS?e=nyljiN'
@@ -22,6 +23,7 @@ onedrive_link = 'https://1drv.ms/u/s!Alu-nJHZ-vTw8wUirrIMsP5SxVPS?e=nyljiN'
 
 @st.cache_data(show_spinner=True)
 def getData():
+    
     def load_onedrive (onedrive_link):
             
         # this converts the share link from above to a file name readable by pandas etc.
@@ -36,27 +38,10 @@ def getData():
 
     return gdf
 
+screen1.write("Loading the data.  Please be patient, it's a big file!")
 gdf = getData()
+
 select_gdf = gdf
-
-# with st.form('Filter Data'):
-
-#     param = st.selectbox("Select a parameter for your query.", gdf.columns)
-#     submitted = st.form_submit_button("Submit")
-    
-#     if submitted:
-#         st.write("Your data will be filtered by " + param)
-
-# with st.form('Filter Data2'):
-
-#     val = st.selectbox('Select a value.', gdf[param].unique())
-    
-#     submitted = st.form_submit_button("Submit")
-    
-#     if submitted:
-#         st.write("You are filtering " + param + " by " + val)
-#         select_gdf = gdf.loc[gdf[param] == val]
-
 
 
 def filter_dataframe(df: pd.DataFrame) -> pd.DataFrame:
@@ -70,6 +55,8 @@ def filter_dataframe(df: pd.DataFrame) -> pd.DataFrame:
         pd.DataFrame: Filtered dataframe
     """
     modify = st.checkbox("Add filters")
+
+    screen1.write("Setting up the map...")
 
     if not modify:
         return df
@@ -137,7 +124,6 @@ def filter_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 
 filtdf = filter_dataframe(gdf) 
 
-
 def mapIt(df):
 # Create and show the map
     df.to_json()
@@ -161,7 +147,8 @@ def mapIt(df):
     Fullscreen().add_to(m)
     folium.LayerControl().add_to(m)
     
-    
+    screen1.empty()
+
     folium_static(m)
 
 mapIt(filtdf)
