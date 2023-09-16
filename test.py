@@ -119,14 +119,11 @@ def filter_dataframe(df: pd.DataFrame) -> pd.DataFrame:
                 if user_text_input:
                     df = df[df[column].astype(str).str.contains(user_text_input)]
 
-    
-    st.download_button(
-        label="Download data as CSV",
-        df.to_csv(),
-        file_name='filtered data.csv',
-        mime='text/csv',
-    )
+    st.download_button("Download filtered data as a csv file",
+                       df.to_csv(),
+                       mime = 'text/csv')
 
+   
     return df
 
 filtdf = filter_dataframe(gdf) 
