@@ -14,7 +14,7 @@ from pandas.api.types import (
 )
 
 
-st.header("Priorities in the South Nation Watershed")
+st.header("Priorities")
 screen1 = st.empty()
 
 #get the share link for the data file form one drive and past below
