@@ -79,13 +79,11 @@ def mapIt(df):
 
     return m
 
-# select_df = filtered_df.iloc[1,:]
-# select_df = gpd.GeoDataFrame(geometry=gpd.GeoSeries(select_df))
+start_number = st.number_input("Start at", value = 0)
 
-# st.write("select_df")
-# st.write(select_df)
+r=start_number
 
-m = mapIt(select_gdf.iloc[1,:])
+m = mapIt(select_gdf.iloc[r:r+1,:])
 
 
 folium_static(m)
