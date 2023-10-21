@@ -15,11 +15,12 @@ from streamlit_extras.dataframe_explorer import dataframe_explorer
 #     is_object_dtype)
 
 st.header("ORYF")
-screen1 = st.empty()
+info_screen = st.empty()
+map_screen = st.empty()
 
 m = folium.Map(location = (45.404028, -75.544722), zoom_start = 12)
 
-screen1.subheader("Loading map data...  Be patient this will take a while!")
+info_screen.subheader("Loading map data...  Be patient this will take a while!")
 
 #get the share link for the data file form one drive and past below
 # onedrive_link = 'https://1drv.ms/u/s!Alu-nJHZ-vTw8wUirrIMsP5SxVPS?e=nyljiN' #High Medium
@@ -68,7 +69,6 @@ filtered_df = add_filt_patch_id(filtered_df)
 
 filtered_df = filtered_df.astype({'filt_patch_id':'int'})
 
-st.write(filtered_df.head(2))
 
 def mapIt(df):
 
@@ -99,15 +99,31 @@ def mapIt(df):
 
     return m
 
+def next_patch(n):
+    
+    m = mapIt(filtered_df.iloc[n:n+1,:])
+
+    folium_static(m)
+
 start_number = st.number_input("Start at", value = 0)
 
-r=start_number
+patch_number = start_number
 
-m = mapIt(filtered_df.iloc[r:r+1,:])
-# m = filtered_df.filter(items = [r,r+1], axis=0)
 
+if 'patch_number' not in st.session_state:
+    st.session_state['patch_number'] = 0
+if st.button('next patch'):
+    st.session_state['patch_number'] += 1
+if st.button('previous patch'):
+    st.session_state['patch_number'] -= 1
+
+st.write(f'Patch Number: {st.session_state["patch_number"]}')
+
+st.write(filtered_df.iloc[st.session_state["patch_number"]:st.session_state["patch_number"]+1,:])
+
+m = mapIt(filtered_df.iloc[st.session_state["patch_number"]:st.session_state["patch_number"]+1,:])
 
 folium_static(m)
 
-screen1.empty()
+info_screen.empty()
 
