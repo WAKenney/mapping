@@ -45,9 +45,9 @@ def getData():
 
     return gdf
 
+
 gdf = getData()
 
-# gdf.astype({'patch_number': 'int32'})
 
 total_rows = gdf.shape[0]
 
@@ -86,7 +86,7 @@ def mapIt(df):
                    name='Planting Priority',
                    categorical=True,
                    legend=True,
-                   style_kwds={'stroke':True, 'color':'black', 'weight': 1})
+                   style_kwds={'stroke':True, 'color':'yellow', 'weight': 1, 'fillOpacity':0})
     
 
     #have an ESRI satellite image as an optional base map
