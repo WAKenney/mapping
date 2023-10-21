@@ -57,8 +57,13 @@ filtered_df = dataframe_explorer(gdf, case=False)
 
 filt_rows = filtered_df.shape[0]
 
-st.write('Total number of rows (unfiltered)', total_rows )
-st.write('Number of filtered rows = ', filt_rows)
+datacol1, datacol2, datacol3 = st.columns(3)
+
+with datacol1:
+    st.write('Total number of rows (unfiltered)', total_rows )
+
+with datacol2:
+    st.write('Number of filtered rows = ', filt_rows)
 
 def add_filt_patch_id(df):
     for i in range(len(df)):
@@ -105,27 +110,39 @@ def next_patch(n):
 
     folium_static(m)
 
-start_number = st.number_input("Start at", value = 0)
+with datacol3:
+    start_number = st.number_input("Start at", value = 0)
 
 # if 'patch_number' not in st.session_state:
 #     st.session_state['patch_number'] = 0
 # st.session_state['patch_number'] = start_number
 
+button1, button2, button3 = st.columns(3)
 
 if 'patch_number' not in st.session_state:
     st.session_state['patch_number'] = 0
-if st.button('next patch'):
-    st.session_state['patch_number'] += 1
-if st.button('previous patch'):
-    st.session_state['patch_number'] -= 1
 
-st.write(f'Filtered Patch Number: {st.session_state["patch_number"]}')
+with button1:    
+    if st.button('next patch'):
+        st.session_state['patch_number'] += 1
 
-st.write(filtered_df.iloc[st.session_state["patch_number"]:st.session_state["patch_number"]+1,:])
+with button2:
+    if st.button('previous patch'):
+        st.session_state['patch_number'] -= 1
+
+with button3:
+    if st.button('Save Patch'):
+        st.write("holding spot")
+
+
+# st.write(f'Filtered Patch Number: {st.session_state["patch_number"]}')
+
+# st.write(filtered_df.iloc[st.session_state["patch_number"]:st.session_state["patch_number"]+1,:])
 
 m = mapIt(filtered_df.iloc[st.session_state["patch_number"]:st.session_state["patch_number"]+1,:])
 
 folium_static(m)
+
 
 info_screen.empty()
 
