@@ -130,7 +130,9 @@ st.write(current_patch)
 
 with button3:
     if st.button('Save Patch'):
-        st.write('Hold')
+        filtered_df.loc[filtered_df['filt_patch_id']==st.session_state['patch_number'], ['selected']] = 'yes'
+        
+        st.write(filtered_df.head())
 
 m = mapIt(current_patch)
 
