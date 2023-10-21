@@ -60,10 +60,10 @@ filt_rows = filtered_df.shape[0]
 datacol1, datacol2, datacol3 = st.columns(3)
 
 with datacol1:
-    st.write('Total number of rows (unfiltered)', total_rows )
+    st.write('Total number of rows', total_rows )
 
 with datacol2:
-    st.write('Number of filtered rows = ', filt_rows)
+    st.write('Number of filtered rows ', filt_rows)
 
 def add_filt_patch_id(df):
     for i in range(len(df)):
