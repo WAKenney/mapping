@@ -107,9 +107,9 @@ def next_patch(n):
 
 start_number = st.number_input("Start at", value = 0)
 
-if 'patch_number' not in st.session_state:
-    st.session_state['patch_number'] = 0
-st.session_state['patch_number'] = start_number
+# if 'patch_number' not in st.session_state:
+#     st.session_state['patch_number'] = 0
+# st.session_state['patch_number'] = start_number
 
 
 if 'patch_number' not in st.session_state:
@@ -119,9 +119,9 @@ if st.button('next patch'):
 if st.button('previous patch'):
     st.session_state['patch_number'] -= 1
 
-# st.write(f'Filtered Patch Number: {st.session_state["patch_number"]}')
+st.write(f'Filtered Patch Number: {st.session_state["patch_number"]}')
 
-# st.write(filtered_df.iloc[st.session_state["patch_number"]:st.session_state["patch_number"]+1,:])
+st.write(filtered_df.iloc[st.session_state["patch_number"]:st.session_state["patch_number"]+1,:])
 
 m = mapIt(filtered_df.iloc[st.session_state["patch_number"]:st.session_state["patch_number"]+1,:])
 
