@@ -72,6 +72,10 @@ def add_filt_patch_id(df):
 
 filtered_df = add_filt_patch_id(filtered_df)
 
+save_filtered_data = st.button('Click here to save the filtered data')
+if save_filtered_data:
+    filtered_df.to_file('dataframe.gpkg', driver='GPKG', layer='name') 
+
 # filtered_df = filtered_df.astype({'filt_patch_id':'int'})
 
 
@@ -104,18 +108,8 @@ def mapIt(df):
 
     return m
 
-def next_patch(n):
-    
-    m = mapIt(filtered_df.iloc[n:n+1,:])
-
-    folium_static(m)
-
 with datacol3:
     start_number = st.number_input("Start at", value = 0)
-
-# if 'patch_number' not in st.session_state:
-#     st.session_state['patch_number'] = 0
-# st.session_state['patch_number'] = start_number
 
 button1, button2, button3 = st.columns(3)
 
@@ -130,16 +124,15 @@ with button2:
     if st.button('previous patch'):
         st.session_state['patch_number'] -= 1
 
+current_patch = filtered_df.iloc[st.session_state["patch_number"]:st.session_state["patch_number"]+1,:]
+
+st.write(current_patch)
+
 with button3:
     if st.button('Save Patch'):
-        st.write("holding spot")
+        st.write('Hold')
 
-
-# st.write(f'Filtered Patch Number: {st.session_state["patch_number"]}')
-
-# st.write(filtered_df.iloc[st.session_state["patch_number"]:st.session_state["patch_number"]+1,:])
-
-m = mapIt(filtered_df.iloc[st.session_state["patch_number"]:st.session_state["patch_number"]+1,:])
+m = mapIt(current_patch)
 
 folium_static(m)
 
