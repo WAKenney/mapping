@@ -67,7 +67,7 @@ def add_filt_patch_id(df):
 
 filtered_df = add_filt_patch_id(filtered_df)
 
-filtered_df = filtered_df.astype({'filt_patch_id':'int'})
+# filtered_df = filtered_df.astype({'filt_patch_id':'int'})
 
 
 def mapIt(df):
@@ -107,7 +107,9 @@ def next_patch(n):
 
 start_number = st.number_input("Start at", value = 0)
 
-patch_number = start_number
+if 'patch_number' not in st.session_state:
+    st.session_state['patch_number'] = 0
+st.session_state['patch_number'] = start_number
 
 
 if 'patch_number' not in st.session_state:
@@ -117,7 +119,7 @@ if st.button('next patch'):
 if st.button('previous patch'):
     st.session_state['patch_number'] -= 1
 
-st.write(f'Patch Number: {st.session_state["patch_number"]}')
+st.write(f'Filtered Patch Number: {st.session_state["patch_number"]}')
 
 st.write(filtered_df.iloc[st.session_state["patch_number"]:st.session_state["patch_number"]+1,:])
 
