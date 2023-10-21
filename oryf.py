@@ -46,6 +46,8 @@ def getData():
 
 gdf = getData()
 
+# gdf.astype({'patch_number': 'int32'})
+
 total_rows = gdf.shape[0]
 
 select_gdf = gdf
@@ -57,10 +59,16 @@ filt_rows = filtered_df.shape[0]
 st.write('Total number of rows (unfiltered)', total_rows )
 st.write('Number of filtered rows = ', filt_rows)
 
-# filtered_df['filt_patch'] 
+def add_filt_patch_id(df):
+    for i in range(len(df)):
+        df.loc[i, 'filt_patch_id'] = i
+    return df
+
+filtered_df = add_filt_patch_id(filtered_df)
+
+filtered_df = filtered_df.astype({'filt_patch_id':'int'})
 
 st.write(filtered_df.head(2))
-
 
 def mapIt(df):
 
