@@ -46,28 +46,40 @@ def getData():
 
 gdf = getData()
 
+total_rows = gdf.shape[0]
+
 select_gdf = gdf
 
 filtered_df = dataframe_explorer(gdf, case=False)
 
+filt_rows = filtered_df.shape[0]
+
+st.write('Total number of rows (unfiltered)', total_rows )
+st.write('Number of filtered rows = ', filt_rows)
+
+# filtered_df['filt_patch'] 
+
 st.write(filtered_df.head(2))
+
 
 def mapIt(df):
 
-    m = df.explore(column = 'Priority', 
-                        tooltip = True, 
-                        popup = True, 
-                        color = 'priorityColour', 
-                        name='Planting Priority',
-                        categorical=True,
-                        legend=True,
-                        style_kwds={'stroke':True, 'color':'black', 'weight': 1})
+    m = df.explore(column = 'Priority',
+                   tiles =  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                   attr = 'Esri',
+                   tooltip = True, 
+                   popup = True, 
+                   color = 'priorityColour', 
+                   name='Planting Priority',
+                   categorical=True,
+                   legend=True,
+                   style_kwds={'stroke':True, 'color':'black', 'weight': 1})
     
 
     #have an ESRI satellite image as an optional base map
     folium.TileLayer(
-        tiles = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-        attr = 'Esri',
+        tiles = 'OpenStreetMap',
+        attr = 'Open Street Map',
         name = 'Satellite',
         overlay = False,
         control = True
@@ -83,7 +95,8 @@ start_number = st.number_input("Start at", value = 0)
 
 r=start_number
 
-m = mapIt(select_gdf.iloc[r:r+1,:])
+m = mapIt(filtered_df.iloc[r:r+1,:])
+# m = filtered_df.filter(items = [r,r+1], axis=0)
 
 
 folium_static(m)
