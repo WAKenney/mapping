@@ -119,9 +119,9 @@ if st.button('next patch'):
 if st.button('previous patch'):
     st.session_state['patch_number'] -= 1
 
-st.write(f'Filtered Patch Number: {st.session_state["patch_number"]}')
+# st.write(f'Filtered Patch Number: {st.session_state["patch_number"]}')
 
-st.write(filtered_df.iloc[st.session_state["patch_number"]:st.session_state["patch_number"]+1,:])
+# st.write(filtered_df.iloc[st.session_state["patch_number"]:st.session_state["patch_number"]+1,:])
 
 m = mapIt(filtered_df.iloc[st.session_state["patch_number"]:st.session_state["patch_number"]+1,:])
 
