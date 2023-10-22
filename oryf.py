@@ -43,11 +43,12 @@ def getData():
 
     gdf = gdf.to_crs(4326)
 
+    for i in range(len(gdf)):
+        gdf.loc[i, 'filt_patch_id'] = i
+
     return gdf
 
-
 gdf = getData()
-
 
 total_rows = gdf.shape[0]
 
@@ -55,6 +56,18 @@ select_gdf = gdf
 
 filtered_df = dataframe_explorer(gdf, case=False)
 
+# filtered_df = filtered_df.assign(selected = 'no')
+
+
+#put filtered_df into session_state
+if 'filtered_df' not in st.session_state:
+    st.session_state['filtered_df'] = []
+
+st.session_state['filtered_df'] = filtered_df
+
+# st.write(st.session_state[filtered_df])
+
+#get the number of rows in filtered_df
 filt_rows = filtered_df.shape[0]
 
 datacol1, datacol2, datacol3 = st.columns(3)
@@ -65,18 +78,16 @@ with datacol1:
 with datacol2:
     st.write('Number of filtered rows ', filt_rows)
 
-def add_filt_patch_id(df):
-    for i in range(len(df)):
-        df.loc[i, 'filt_patch_id'] = i
-    return df
+# def add_filt_patch_id(df):
+#     for i in range(len(df)):
+#         df.loc[i, 'filt_patch_id'] = i
+#     return df
 
-filtered_df = add_filt_patch_id(filtered_df)
+# filtered_df = add_filt_patch_id(filtered_df)
 
-save_filtered_data = st.button('Click here to save the filtered data')
-if save_filtered_data:
-    filtered_df.to_file('dataframe.gpkg', driver='GPKG', layer='name') 
-
-# filtered_df = filtered_df.astype({'filt_patch_id':'int'})
+# save_filtered_data = st.button('Click here to save the filtered data')
+# if save_filtered_data:
+#     filtered_df.to_file('dataframe.gpkg', driver='GPKG', layer='name') 
 
 
 def mapIt(df):
@@ -126,13 +137,22 @@ with button2:
 
 current_patch = filtered_df.iloc[st.session_state["patch_number"]:st.session_state["patch_number"]+1,:]
 
+st.subheader("Current Patch")
 st.write(current_patch)
 
 with button3:
     if st.button('Save Patch'):
-        filtered_df.loc[filtered_df['filt_patch_id']==st.session_state['patch_number'], ['selected']] = 'yes'
+
+        if 'selected_df' not in st.session_state:
+            st.session_state['selected_df'] = filtered_df
+
+        selected_df = st.session_state.selected_df
         
-        st.write(filtered_df.head())
+        selected_df.loc[selected_df['filt_patch_id']==st.session_state.patch_number, ['selected']] = 'yes'
+
+        st.session_state['selected_df'] = selected_df
+
+        # st.write(st.session_state['selected_df'].head(10))
 
 m = mapIt(current_patch)
 
