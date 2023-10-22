@@ -155,11 +155,17 @@ with button3:
 with button4:
 
     if st.button('Save selected patches'):
+        
+        # convert to CSV
+        csv = st.session_state['selected_df'].to_csv(index=False)
 
-        st.write(selected_df.head(10))
-
-        # selected_df.to_file('selected.gpkg', driver='GPKG', layer='Selected')
-
+        # create a download button
+        st.download_button(
+            label='Download Selected',
+            data=csv,
+            file_name='selected.csv',
+            mime='text/csv'
+        )
 
        
 m = mapIt(current_patch)
