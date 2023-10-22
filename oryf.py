@@ -122,7 +122,7 @@ def mapIt(df):
 with datacol3:
     start_number = st.number_input("Start at", value = 0)
 
-button1, button2, button3 = st.columns(3)
+button1, button2, button3, button4 = st.columns(4)
 
 if 'patch_number' not in st.session_state:
     st.session_state['patch_number'] = 0
@@ -137,11 +137,11 @@ with button2:
 
 current_patch = filtered_df.iloc[st.session_state["patch_number"]:st.session_state["patch_number"]+1,:]
 
-st.subheader("Current Patch")
+st.subheader("Current Patch ")
 st.write(current_patch)
 
 with button3:
-    if st.button('Save Patch'):
+    if st.button('SELECT Patch'):
 
         if 'selected_df' not in st.session_state:
             st.session_state['selected_df'] = filtered_df
@@ -152,11 +152,25 @@ with button3:
 
         st.session_state['selected_df'] = selected_df
 
-        # st.write(st.session_state['selected_df'].head(10))
+with button4:
 
+    if st.button('Save selected patches'):
+
+        st.write(selected_df.head(10))
+
+        # selected_df.to_file('selected.gpkg', driver='GPKG', layer='Selected')
+
+
+       
 m = mapIt(current_patch)
 
 folium_static(m)
+
+if 'selected_df' in st.session_state:
+    st.write(st.session_state.selected_df.head(11))
+else:
+    st.subheader("The selected_df isn't in the session state yet")
+
 
 
 info_screen.empty()
