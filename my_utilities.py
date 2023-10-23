@@ -1,0 +1,63 @@
+import streamlit as st
+import pandas as pd
+import geopandas as gpd
+
+st.subheader('Concatenate two files')
+
+def concat_files():
+
+    def get_file(key_number):
+        uploaded_file = st.file_uploader("Choose a file", key = key_number)
+            
+        if uploaded_file is not None:
+
+            df = pd.read_csv(uploaded_file)
+
+            return df
+        
+    def append_files(df1, df2):
+
+        return pd.concat(df1, df2)
+
+    df1 = get_file(1)
+
+    if df1 is None:
+        st.warning("Pick a file")
+    else:
+        st.dataframe(df1)
+
+    df2 = get_file(2)
+
+    if df2 is None:
+        st.warning("Pick a file")
+    else:
+        st.dataframe(df2)
+
+    if df1 is None:
+        st.warning("At least one dataframe is missing")
+    elif df2 is None:
+        st.warning("At least one dataframe is missing")
+    else:
+        df3 = pd.concat([df1, df2])
+        st.dataframe(df3)
+
+
+        # st.download_button(
+        #     label='Download Selected',
+        #     data=csv,
+        #     file_name='selected.csv',
+        #     mime='text/csv'
+        # )
+
+        df3_csv = df3.to_csv(index=False).encode('utf-8')
+    
+        st.download_button(
+        "Press to Download",
+        df3_csv,
+        "concatenated_file.csv",
+        "text/csv",
+        key='download-csv'
+        )
+
+concat_files()
+
