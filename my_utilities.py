@@ -2,9 +2,10 @@ import streamlit as st
 import pandas as pd
 import geopandas as gpd
 
-st.subheader('Concatenate two files')
 
 def concat_files():
+
+    st.subheader('Concatenate two files')
 
     def get_file(key_number):
         uploaded_file = st.file_uploader("Choose a file", key = key_number)
@@ -49,15 +50,20 @@ def concat_files():
         #     mime='text/csv'
         # )
 
-        df3_csv = df3.to_csv(index=False).encode('utf-8')
-    
-        st.download_button(
-        "Press to Download",
-        df3_csv,
-        "concatenated_file.csv",
-        "text/csv",
-        key='download-csv'
-        )
+df3_csv = df3.to_csv(index=False).encode('utf-8')
 
-concat_files()
+st.download_button("Press to Download Concatenated file.",
+                    df3_csv,
+                    "concatenated_file.csv",
+                    "text/csv",
+                    key='download-csv'
+                    )
 
+
+pick_utility = st.radio('Select a Utility', options = ['Concatenate Files', 'Load CSV File'])
+
+if pick_utility == 'Concatenate Files':
+    concat_files()
+
+if pick_utility == 'Load CSV File':
+    st.subheader("Coming Soon!")
