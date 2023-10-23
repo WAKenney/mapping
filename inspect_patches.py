@@ -7,6 +7,7 @@ import streamlit as st
 from streamlit_folium import folium_static
 from streamlit_extras.dataframe_explorer import dataframe_explorer 
 
+ss = st.session_state
 
 # from pandas.api.types import (
 #     is_categorical_dtype,
@@ -23,7 +24,6 @@ m = folium.Map(location = (45.404028, -75.544722), zoom_start = 12)
 info_screen.subheader("Loading map data...  Be patient this will take a while!")
 
 #get the share link for the data file form one drive and past below
-# onedrive_link = 'https://1drv.ms/u/s!Alu-nJHZ-vTw8wUirrIMsP5SxVPS?e=nyljiN' #High Medium
 onedrive_link = 'https://1drv.ms/u/s!Alu-nJHZ-vTw83vNKAt2C0AwRpaD?e=u7cDaX' #High Medium Low
 
 @st.cache_data(show_spinner=True)
@@ -56,20 +56,17 @@ select_gdf = gdf
 
 filtered_df = dataframe_explorer(gdf, case=False)
 
-# filtered_df = filtered_df.assign(selected = 'no')
-
 
 #put filtered_df into session_state
-if 'filtered_df' not in st.session_state:
-    st.session_state['filtered_df'] = []
+if 'filtered_df' not in ss:
+    ss['filtered_df'] = []
 
-st.session_state['filtered_df'] = filtered_df
-
-# st.write(st.session_state[filtered_df])
+ss['filtered_df'] = filtered_df
 
 #get the number of rows in filtered_df
 filt_rows = filtered_df.shape[0]
 
+# setup a panel with 3 columns
 datacol1, datacol2, datacol3 = st.columns(3)
 
 with datacol1:
@@ -91,6 +88,7 @@ with datacol2:
 
 
 def mapIt(df):
+    '''Creates a mapp showing the polygons in a given dataframe df'''
 
     m = df.explore(column = 'Priority',
                    tiles =  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
@@ -119,23 +117,28 @@ def mapIt(df):
 
     return m
 
+# enter a patch number to start at
+
 with datacol3:
     start_number = st.number_input("Start at", value = 0)
 
+# setup another panel with 4 buttons
+
 button1, button2, button3, button4 = st.columns(4)
 
-if 'patch_number' not in st.session_state:
-    st.session_state['patch_number'] = 0
+if 'patch_number' not in ss:
+    ss['patch_number'] = 0
 
 with button1:    
     if st.button('next patch'):
-        st.session_state['patch_number'] += 1
+        ss['patch_number'] += 1
 
 with button2:
     if st.button('previous patch'):
-        st.session_state['patch_number'] -= 1
+        ss['patch_number'] -= 1
 
-current_patch = filtered_df.iloc[st.session_state["patch_number"]:st.session_state["patch_number"]+1,:]
+#set the curreent patch
+current_patch = filtered_df.iloc[ss["patch_number"]:ss["patch_number"]+1,:]
 
 st.subheader("Current Patch ")
 st.write(current_patch)
@@ -143,23 +146,23 @@ st.write(current_patch)
 with button3:
     if st.button('SELECT Patch'):
 
-        if 'selected_df' not in st.session_state:
-            st.session_state['selected_df'] = filtered_df
+        if 'selected_df' not in ss:
+            ss['selected_df'] = filtered_df
 
-        selected_df = st.session_state.selected_df
+        selected_df = ss.selected_df
         
-        selected_df.loc[selected_df['filt_patch_id']==st.session_state.patch_number, ['selected']] = 'yes'
+        selected_df.loc[selected_df['filt_patch_id']==ss.patch_number, ['selected']] = 'yes'
 
-        st.session_state['selected_df'] = selected_df
+        ss['selected_df'] = selected_df
 
 with button4:
 
     if st.button('Save selected patches'):
 
-        st.session_state['selected_df'].dropna(subset=['selected'], inplace=True)
+        ss['selected_df'].dropna(subset=['selected'], inplace=True)
         
         # convert to CSV
-        csv = st.session_state['selected_df'].to_csv(index=False)
+        csv = ss['selected_df'].to_csv(index=False)
 
         # create a download button
         st.download_button(
@@ -172,21 +175,28 @@ with button4:
        
 m = mapIt(current_patch)
 
+if st.button("View a map of the selected the pached.", key="selected"):
+
+    st.write('This is the selected_df')
+    st.write(ss['selected_df'])
+    
+    selected_df_map = mapIt(ss['selected_df'])
+    
+    folium_static(selected_df_map)
+
+
 folium_static(m)
 
-if 'selected_df' in st.session_state:
-    st.write(st.session_state.selected_df.head(11))
+if 'selected_df' in ss:
+    st.subheader("These are the selected patches so far")
+    st.write(ss['selected_df'].loc[ss['selected_df'].selected =='yes'])
 else:
     st.subheader("The selected_df isn't in the session state yet")
 
 info_screen.empty()
 
 
-if st.button("View a map of the selected the pached.", key="selected"):
-    
-    selected_df_map = mapIt(st.session_state['selected_df'])
-    
-    folium_static(selected_df_map)
+
 
 
 
