@@ -137,14 +137,11 @@ with button3:
 
         ss.selected_df = pd.concat([ss.selected_df, current_patch])
 
-        # st.write(ss.selected_df)
 
 with button4:
 
     if st.button('Save selected patches'):
-
-        ss['selected_df'].dropna(subset=['selected'], inplace=True)
-        
+      
         # convert to CSV
         csv = ss['selected_df'].to_csv(index=False)
 
@@ -159,16 +156,14 @@ with button4:
 with button5:
     if st.button('This will re-set the selected patches.  Continue?'):
         if st.button('Are you sure you want to clear the list of selected patches?'):
-            st.write('Blah Blah')
-            # del ss.selected_df
-
+            del ss.selected_df
+            
        
 m = mapIt(current_patch)
 
 if st.button("View a map of the selected the pached.", key="selected"):
 
     st.write('This is the selected_df')
-    # st.write(ss['selected_df'])
     
     selected_df_map = mapIt(ss['selected_df'])
     
@@ -180,12 +175,7 @@ folium_static(m)
 if 'selected_df' in ss:
     st.subheader("These are the selected patches so far")
     st.write(ss.selected_df)
-    # st.write(ss['selected_df'].loc[ss['selected_df'].selected =='yes'])
 else:
     st.subheader("There are no selected patches yet.")
 
 info_screen.empty()
-
-
-
-
