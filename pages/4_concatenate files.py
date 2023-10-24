@@ -1,3 +1,8 @@
+import pandas as pd
+import geopandas as gpd
+import streamlit as st
+
+st.subheader("Concatenate two dataframes and save")
 
 def get_file(key_number):
     uploaded_file = st.file_uploader("Choose a file", key = key_number)
@@ -41,11 +46,4 @@ def concat_files():
                             key='download-csv'
                             )
 
-
-# pick_utility = st.radio('Select a Utility', options = ['Concatenate Files', 'Load CSV File'])
-
-# if pick_utility == 'Concatenate Files':
-#         concat_files()
-
-# if pick_utility == 'Load CSV File':
-#     st.subheader("Coming Soon!")
+concat_files()
