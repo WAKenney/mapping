@@ -52,16 +52,13 @@ gdf = getData()
 
 total_rows = gdf.shape[0]
 
-select_gdf = gdf
-
 filtered_df = dataframe_explorer(gdf, case=False)
 
+# #put filtered_df into session_state
+# if 'filtered_df' not in ss:
+#     ss['filtered_df'] = []
 
-#put filtered_df into session_state
-if 'filtered_df' not in ss:
-    ss['filtered_df'] = []
-
-ss['filtered_df'] = filtered_df
+# ss['filtered_df'] = filtered_df
 
 #get the number of rows in filtered_df
 filt_rows = filtered_df.shape[0]
@@ -74,17 +71,6 @@ with datacol1:
 
 with datacol2:
     st.write('Number of filtered rows ', filt_rows)
-
-# def add_filt_patch_id(df):
-#     for i in range(len(df)):
-#         df.loc[i, 'filt_patch_id'] = i
-#     return df
-
-# filtered_df = add_filt_patch_id(filtered_df)
-
-# save_filtered_data = st.button('Click here to save the filtered data')
-# if save_filtered_data:
-#     filtered_df.to_file('dataframe.gpkg', driver='GPKG', layer='name') 
 
 
 def mapIt(df):
@@ -122,9 +108,9 @@ def mapIt(df):
 with datacol3:
     start_number = st.number_input("Start at", value = 0)
 
-# setup another panel with 4 buttons
+# setup another panel with 5 buttons
 
-button1, button2, button3, button4 = st.columns(4)
+button1, button2, button3, button4, button5 = st.columns(5)
 
 if 'patch_number' not in ss:
     ss['patch_number'] = 0
@@ -137,7 +123,7 @@ with button2:
     if st.button('previous patch'):
         ss['patch_number'] -= 1
 
-#set the curreent patch
+#set the current patch
 current_patch = filtered_df.iloc[ss["patch_number"]:ss["patch_number"]+1,:]
 
 st.subheader("Current Patch ")
@@ -147,13 +133,11 @@ with button3:
     if st.button('SELECT Patch'):
 
         if 'selected_df' not in ss:
-            ss['selected_df'] = filtered_df
+            ss.selected_df = current_patch
 
-        selected_df = ss.selected_df
-        
-        selected_df.loc[selected_df['filt_patch_id']==ss.patch_number, ['selected']] = 'yes'
+        ss.selected_df = pd.concat([ss.selected_df, current_patch])
 
-        ss['selected_df'] = selected_df
+        # st.write(ss.selected_df)
 
 with button4:
 
@@ -172,13 +156,19 @@ with button4:
             mime='text/csv'
         )
 
+with button5:
+    if st.button('This will re-set the selected patches.  Continue?'):
+        if st.button('Are you sure you want to clear the list of selected patches?'):
+            st.write('Blah Blah')
+            # del ss.selected_df
+
        
 m = mapIt(current_patch)
 
 if st.button("View a map of the selected the pached.", key="selected"):
 
     st.write('This is the selected_df')
-    st.write(ss['selected_df'])
+    # st.write(ss['selected_df'])
     
     selected_df_map = mapIt(ss['selected_df'])
     
@@ -189,13 +179,12 @@ folium_static(m)
 
 if 'selected_df' in ss:
     st.subheader("These are the selected patches so far")
-    st.write(ss['selected_df'].loc[ss['selected_df'].selected =='yes'])
+    st.write(ss.selected_df)
+    # st.write(ss['selected_df'].loc[ss['selected_df'].selected =='yes'])
 else:
-    st.subheader("The selected_df isn't in the session state yet")
+    st.subheader("There are no selected patches yet.")
 
 info_screen.empty()
-
-
 
 
 
