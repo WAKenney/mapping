@@ -23,6 +23,26 @@ m = folium.Map(location = (45.404028, -75.544722), zoom_start = 12)
 
 info_screen.subheader("Loading map data...  Be patient this will take a while!")
 
+def csv_to_gdf():
+
+    # Load csv and convert it to a GeoDataFrame
+
+    uploaded_file = st.file_uploader("Choose a file", key = 1)
+        
+    if uploaded_file is not None:
+
+        df = pd.read_csv(uploaded_file)
+
+    return gpd.GeoDataFrame(df, geometry=gpd.GeoSeries.from_wkt(df['geometry']))
+
+# gdf = csv_to_gdf()
+
+# gdf = gdf.set_crs('epsg:4326')
+
+
+
+
+
 #get the share link for the data file form one drive and past below
 onedrive_link = 'https://1drv.ms/u/s!Alu-nJHZ-vTw83vNKAt2C0AwRpaD?e=u7cDaX' #High Medium Low
 
