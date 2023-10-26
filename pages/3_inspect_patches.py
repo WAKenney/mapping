@@ -21,6 +21,8 @@ map_screen = st.empty()
 
 m = folium.Map(location = (45.404028, -75.544722), zoom_start = 12)
 
+st.subheader("Selecting Patches")
+
 info_screen.subheader("Loading map data...  Be patient this will take a while!")
 
 def get_some_csv_data():
