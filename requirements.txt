@@ -6,7 +6,7 @@ plotly
 Shapely
 streamlit
 streamlit_folium
-streamlit_extras
+streamlit-extras
 XlsxWriter
 openpyxl
 pillow
