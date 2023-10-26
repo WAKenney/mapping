@@ -23,7 +23,7 @@ m = folium.Map(location = (45.404028, -75.544722), zoom_start = 12)
 
 info_screen.subheader("Loading map data...  Be patient this will take a while!")
 
-def csv_to_gdf():
+def get_some_csv_data():
 
     # Load csv and convert it to a GeoDataFrame
 
@@ -35,19 +35,12 @@ def csv_to_gdf():
 
     return gpd.GeoDataFrame(df, geometry=gpd.GeoSeries.from_wkt(df['geometry']))
 
-# gdf = csv_to_gdf()
-
-# gdf = gdf.set_crs('epsg:4326')
-
-
-
-
 
 #get the share link for the data file form one drive and past below
 onedrive_link = 'https://1drv.ms/u/s!Alu-nJHZ-vTw83vNKAt2C0AwRpaD?e=u7cDaX' #High Medium Low
 
 @st.cache_data(show_spinner=True)
-def getData():
+def get_all_data():
     
     def load_onedrive (onedrive_link):
             
@@ -68,7 +61,21 @@ def getData():
 
     return gdf
 
-gdf = getData()
+data_source_type = st.radio("Where do you want to get your data?", options = ['All in Ottawa East', "From a file you select"])
+
+if data_source_type == 'All in Ottawa East':
+    
+    gdf = get_all_data()
+
+else:
+
+    gdf = get_some_csv_data()
+
+gdf = gdf.set_crs(4326)
+
+st.write("gdf crs = ", gdf.crs)
+
+gdf = gdf.to_crs(4326)
 
 total_rows = gdf.shape[0]
 
@@ -102,17 +109,17 @@ def mapIt(df):
                    tooltip = True, 
                    popup = True, 
                    color = 'priorityColour', 
-                   name='Planting Priority',
+                   name='Current Patch',
                    categorical=True,
                    legend=True,
-                   style_kwds={'stroke':True, 'color':'yellow', 'weight': 1, 'fillOpacity':0})
+                   style_kwds={'stroke':True, 'color':'yellow', 'weight': 3, 'fillOpacity':0})
     
 
     #have an ESRI satellite image as an optional base map
     folium.TileLayer(
         tiles = 'OpenStreetMap',
         attr = 'Open Street Map',
-        name = 'Satellite',
+        name = 'Open Street Map',
         overlay = False,
         control = True
         ).add_to(m)
