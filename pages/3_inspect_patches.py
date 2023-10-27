@@ -112,6 +112,19 @@ total_rows = gdf.shape[0]
 
 filtered_df = dataframe_explorer(gdf, case=False)
 
+# if filtered_df is not None:
+
+#     if st.button("Save Filtered Dataframe"):
+#         filtered_csv = filtered_df.to_csv(index=False).encode('utf-8')
+
+#         st.download_button("Press to Download Filtered Data.",
+#                             filtered_df,
+#                             "filtered_df.csv",
+#                             "text/csv",
+#                             key='download-csv'
+#                             )
+
+
 # #put filtered_df into session_state
 # if 'filtered_df' not in ss:
 #     ss['filtered_df'] = []
