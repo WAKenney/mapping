@@ -25,6 +25,20 @@ st.subheader("Selecting Patches")
 
 info_screen.subheader("Loading map data...  Be patient this will take a while!")
 
+
+def get_geopackage():
+
+    # Load geopackage and convert it to a GeoDataFrame
+
+    uploaded_file = st.file_uploader("Choose a file", key = 1)
+        
+    if uploaded_file is not None:
+
+        df = gpd.read_file(uploaded_file)
+
+    return df
+
+
 def get_some_csv_data():
 
     # Load csv and convert it to a GeoDataFrame
@@ -63,9 +77,21 @@ def get_all_data():
 
     return gdf
 
-data_source_type = st.radio("Where do you want to get your data?", options = ['All in Ottawa East', "From a file you select"])
 
-if data_source_type == 'All in Ottawa East':
+def test_if_df(df):
+    if isinstance(df, gpd.GeoDataFrame):
+        st.write('Yes, it is a GeoDataFrame!')
+    else:
+        st.write('No, it is not a GeoDataFrame.')
+
+
+data_source_type = st.radio("Where do you want to get your data?", options = ["Geopackage", "All in Ottawa East", "From a file you select"])
+
+if data_source_type == "Geopackage":
+
+    gdf = get_geopackage()
+
+elif data_source_type == 'All in Ottawa East':
     
     gdf = get_all_data()
 
@@ -73,7 +99,10 @@ else:
 
     gdf = get_some_csv_data()
 
-gdf = gdf.set_crs(4326)
+
+test_if_df(gdf)
+
+# gdf = gdf.set_crs(4326)
 
 st.write("gdf crs = ", gdf.crs)
 
