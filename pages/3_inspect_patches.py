@@ -222,21 +222,21 @@ with button3:
 
         ss.selected_df = pd.concat([ss.selected_df, current_patch])
 
+
 with button4:
-    if st.button('Save selected patches'):
+    ss['selected_df'] = ss['selected_df'].drop_duplicates(subset=['PIN']) 
+    
+    # convert to CSV
+    csv = ss['selected_df'].to_csv(index=False)
 
-        ss['selected_df'] = ss['selected_df'].drop_duplicates(subset=['PIN']) 
-        
-        # convert to CSV
-        csv = ss['selected_df'].to_csv(index=False)
+    # create a download button
+    st.download_button(
+        label='Download Selected',
+        data=csv,
+        file_name='selected.csv',
+        mime='text/csv'
+    )
 
-        # create a download button
-        st.download_button(
-            label='Download Selected',
-            data=csv,
-            file_name='selected.csv',
-            mime='text/csv'
-        )
 
 with button5:
     if st.button('This will re-set the selected patches.  Continue?'):
