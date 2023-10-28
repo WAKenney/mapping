@@ -22,7 +22,7 @@ st.subheader("Loading map data...  Be patient this will take a while!")
 onedrive_link = 'https://1drv.ms/u/s!Alu-nJHZ-vTw83vNKAt2C0AwRpaD?e=u7cDaX' #High Medium Low
 
 @st.cache_data(show_spinner=True)
-def getData():
+def get_data():
     
     def load_onedrive (onedrive_link):
             
@@ -38,8 +38,20 @@ def getData():
 
     return gdf
 
+polygon_gdf = get_data()
 
-#Read a geopackage
+def test_if_df(df):
+    if isinstance(df, gpd.GeoDataFrame):
+        st.write('Yes, it is a GeoDataFrame!')
+    else:
+        st.write('No, it is not a GeoDataFrame.')
+
+polygon_gdf.to_crs(3857, inplace = True)
+
+test_if_df(polygon_gdf)
+
+st.write(polygon_gdf.crs)
+
 
 def get_buffer():
     
@@ -52,29 +64,60 @@ def get_buffer():
         return gdf
 
 
-polygon_gdf = getData()
+def create_buffer():
+    point = Point(45.46093652229643, -75.48770910276248)
 
-polygon_gdf = polygon_gdf.to_crs(3857)
+    return gpd.GeoDataFrame(geometry=[point.buffer(12000)], crs = 3857)
+
+buffer_gdf = create_buffer()
+
+buffer_gdf.to_crs(3857, inplace = True)
+
+test_if_df(buffer_gdf)
 
 st.write(polygon_gdf.crs)
 
-buffer_gdf = get_buffer()
+# buffer_gdf = get_buffer()
 
-st.write(buffer_gdf.crs)
+# orleans_polygons = polygon_gdf[polygon_gdf.within(buffer_gdf.geometry.iloc[0])]
 
-orleans_polygons = polygon_gdf[polygon_gdf.within(buffer_gdf.geometry.iloc[0])]
+orleans_polygons = gpd.overlay(polygon_gdf, buffer_gdf, how='intersection')
 
-st.write(orleans_polygons.shape)
-st.write(orleans_polygons.crs)
+st.write(orleans_polygons)
+
+# test_if_df(orleans_polygons)
+
+# st.write(orleans_polygons)
 
 
-st.write(orleans_polygons.crs)
 
 orleans_polygons = orleans_polygons.to_crs(4326)
 
-st.write(orleans_polygons.crs)
-
 m = orleans_polygons.explore()
 
+polygon_gdf.to_crs(crs = 4326, inplace = True)
+
+st.write("AHHH",polygon_gdf.crs)
+
+m = polygon_gdf.explore()
+
+buffer_gdf.to_crs(crs = 4326, inplace = True)
+
+st.write(buffer_gdf)
+
+buffer_gdf.explore().add_to(m)
+
+def save_file(df):
+    df_csv = df.to_csv(index=False).encode('utf-8')
+
+    st.download_button("Press to Download File.",
+                        df_csv,
+                        "File.csv",
+                        "text/csv",
+                        key='download-csv'
+                        )
+
+if st.button("Save the file?"):
+    save_file(orleans_polygons)
 
 folium_static(m)
