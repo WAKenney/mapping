@@ -26,17 +26,26 @@ st.subheader("Selecting Patches")
 info_screen.subheader("Loading map data...  Be patient this will take a while!")
 
 
+
 def get_geopackage():
 
     # Load geopackage and convert it to a GeoDataFrame
 
-    uploaded_file = st.file_uploader("Choose a file", key = 1)
+    try:
+
+        uploaded_file = st.file_uploader("Choose a file", key = 1)
+            
+        if uploaded_file is not None:
+
+            df = gpd.read_file(uploaded_file)
         
-    if uploaded_file is not None:
+        return df
+    
+    except UnboundLocalError:
+        st.warning('You must select a file to upload first.', icon="⚠️")
 
-        df = gpd.read_file(uploaded_file)
+    
 
-    return df
 
 
 def get_some_csv_data():
@@ -54,6 +63,7 @@ def get_some_csv_data():
 
 #get the share link for the data file form one drive and past below
 onedrive_link = 'https://1drv.ms/u/s!Alu-nJHZ-vTw83vNKAt2C0AwRpaD?e=u7cDaX' #High Medium Low
+
 
 @st.cache_data(show_spinner=True)
 def get_all_data():
@@ -85,6 +95,37 @@ def test_if_df(df):
         st.write('No, it is not a GeoDataFrame.')
 
 
+def mapIt(df):
+    '''Creates a mapp showing the polygons in a given dataframe df'''
+
+    m = df.explore(column = 'Priority',
+                   tiles =  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                   attr = 'Esri',
+                   tooltip = True, 
+                   popup = True, 
+                   color = 'priorityColour', 
+                   name='Current Patch',
+                   categorical=True,
+                   legend=True,
+                   style_kwds={'stroke':True, 'color':'yellow', 'weight': 3, 'fillOpacity':0})
+    
+
+    #have an ESRI satellite image as an optional base map
+    folium.TileLayer(
+        tiles = 'OpenStreetMap',
+        attr = 'Open Street Map',
+        name = 'Open Street Map',
+        overlay = False,
+        control = True
+        ).add_to(m)
+
+    # add a fullscreen option and layer control to the map
+    Fullscreen().add_to(m)
+    folium.LayerControl().add_to(m)
+
+    return m
+
+
 data_source_type = st.radio("Where do you want to get your data?", options = ["Geopackage", "All in Ottawa East", "From a file you select"])
 
 if data_source_type == "Geopackage":
@@ -104,7 +145,8 @@ test_if_df(gdf)
 
 # gdf = gdf.set_crs(4326)
 
-st.write("gdf crs = ", gdf.crs)
+if gdf is not None:
+    st.write("gdf crs = ", gdf.crs)
 
 gdf = gdf.to_crs(4326)
 
@@ -146,44 +188,11 @@ with datacol1:
 with datacol2:
     st.write('Number of filtered rows ', filt_rows)
 
-
-def mapIt(df):
-    '''Creates a mapp showing the polygons in a given dataframe df'''
-
-    m = df.explore(column = 'Priority',
-                   tiles =  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-                   attr = 'Esri',
-                   tooltip = True, 
-                   popup = True, 
-                   color = 'priorityColour', 
-                   name='Current Patch',
-                   categorical=True,
-                   legend=True,
-                   style_kwds={'stroke':True, 'color':'yellow', 'weight': 3, 'fillOpacity':0})
-    
-
-    #have an ESRI satellite image as an optional base map
-    folium.TileLayer(
-        tiles = 'OpenStreetMap',
-        attr = 'Open Street Map',
-        name = 'Open Street Map',
-        overlay = False,
-        control = True
-        ).add_to(m)
-
-    # add a fullscreen option and layer control to the map
-    Fullscreen().add_to(m)
-    folium.LayerControl().add_to(m)
-
-    return m
-
 # enter a patch number to start at
-
 with datacol3:
     start_number = st.number_input("Start at", value = 0)
 
 # setup another panel with 5 buttons
-
 button1, button2, button3, button4, button5 = st.columns(5)
 
 if 'patch_number' not in ss:
@@ -200,9 +209,11 @@ with button2:
 #set the current patch
 current_patch = filtered_df.iloc[ss["patch_number"]:ss["patch_number"]+1,:]
 
+#display the current patch data
 st.subheader("Current Patch ")
 st.write(current_patch)
 
+#set up buttons to do various tasks
 with button3:
     if st.button('SELECT Patch'):
 
@@ -211,9 +222,7 @@ with button3:
 
         ss.selected_df = pd.concat([ss.selected_df, current_patch])
 
-
 with button4:
-
     if st.button('Save selected patches'):
       
         # convert to CSV
@@ -235,7 +244,7 @@ with button5:
        
 m = mapIt(current_patch)
 
-if st.button("View a map of the selected the pached.", key="selected"):
+if st.button("View a map of the selected pach.", key="selected"):
 
     st.write('This is the selected_df')
     
@@ -246,6 +255,7 @@ if st.button("View a map of the selected the pached.", key="selected"):
 
 folium_static(m)
 
+#display tthe accumulated selected patches this far
 if 'selected_df' in ss:
     st.subheader("These are the selected patches so far")
     st.write(ss.selected_df)
@@ -253,3 +263,5 @@ else:
     st.subheader("There are no selected patches yet.")
 
 info_screen.empty()
+
+##################################################
