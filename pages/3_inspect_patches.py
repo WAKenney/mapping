@@ -6,6 +6,7 @@ import pandas as pd
 import streamlit as st
 from streamlit_folium import folium_static
 from streamlit_extras.dataframe_explorer import dataframe_explorer 
+import os
 
 ss = st.session_state
 
@@ -154,20 +155,15 @@ total_rows = gdf.shape[0]
 
 filtered_df = dataframe_explorer(gdf, case=False)
 
-# if filtered_df is not None:
+if filtered_df is not None:
+    
+    st.download_button("Press to download the filtered data file to your 'Downloads' directory.",
+                        filtered_df.to_csv(index=False).encode('utf-8'),
+                        "filtered_data.csv",
+                        "text/csv",
+                        key='download-csv'
+                        )
 
-#     if st.button("Save Filtered Dataframe"):
-
-#         # convert the geometry column to a string column
-#         filtered_df['geometry'] = filtered_df['geometry'].to_wkt()
-#         filtered_csv = filtered_df.to_csv(index=False).encode('utf-8')
-
-#         st.download_button(label = "Press to Download Filtered Data.",
-#                            data = filtered_df,
-#                            file_name = "filtered_df.csv",
-#                            mime = "text/csv",
-#                             key='download-filtered'
-#                             )
 
 
 # #put filtered_df into session_state
