@@ -59,7 +59,11 @@ def get_some_csv_data():
 
         df = pd.read_csv(uploaded_file)
 
-    return gpd.GeoDataFrame(df, geometry=gpd.GeoSeries.from_wkt(df['geometry']))
+        gdf = gpd.GeoDataFrame(df, geometry=gpd.GeoSeries.from_wkt(df['geometry']))
+
+        gdf = gdf.set_crs(4326)
+
+    return gdf
 
 
 #get the share link for the data file form one drive and past below
@@ -220,7 +224,9 @@ with button3:
 
 with button4:
     if st.button('Save selected patches'):
-      
+
+        ss['selected_df'] = ss['selected_df'].drop_duplicates(subset=['PIN']) 
+        
         # convert to CSV
         csv = ss['selected_df'].to_csv(index=False)
 
@@ -254,10 +260,10 @@ folium_static(m)
 #display tthe accumulated selected patches this far
 if 'selected_df' in ss:
     st.subheader("These are the selected patches so far")
-    st.write(ss.selected_df)
+    st.write(ss.selected_df.drop_duplicates(subset=['PIN']))
 else:
     st.subheader("There are no selected patches yet.")
 
 info_screen.empty()
-
+ 
 ##################################################
