@@ -6,8 +6,13 @@ import pandas as pd
 import streamlit as st
 from streamlit_folium import folium_static
 from streamlit_extras.dataframe_explorer import dataframe_explorer 
-import os
 
+# from geopy.geocoder import Nominatim
+
+#ste geo_loc for reverse geolocation - get address from centroid
+# geo_loc = Nominatim(user_agent = 'GetLoc')
+
+#abreviate st.session_state
 ss = st.session_state
 
 # from pandas.api.types import (
@@ -18,6 +23,7 @@ ss = st.session_state
 
 st.header("ORYF")
 
+#create the base map centres at Orleans
 m = folium.Map(location = (45.404028, -75.544722), zoom_start = 12)
 
 st.subheader("Selecting Patches")
@@ -208,6 +214,15 @@ with button2:
 #set the current patch
 current_patch = filtered_df.iloc[ss["patch_number"]:ss["patch_number"]+1,:]
 
+#create current_patch centroid to use in calculation of address
+current_patch['centroid'] = current_patch['geometry'].centroid
+
+#determine address of the centroid of the current patch
+patch_address = gpd.tools.reverse_geocode(current_patch['centroid'])
+
+#store the address in the current pacth df
+current_patch['address'] = patch_address.iloc[0,1]
+
 #display the current patch data
 st.subheader("Current Patch ")
 
@@ -216,8 +231,6 @@ st.write(current_patch)
 #set up buttons to do various tasks
 with button3:
     if st.button('SELECT Patch'):
-
-        current_patch['centroid'] = current_patch['geometry'].centroid
 
         if 'selected_df' not in ss:
 
