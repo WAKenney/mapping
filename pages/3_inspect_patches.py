@@ -17,16 +17,13 @@ ss = st.session_state
 #     is_object_dtype)
 
 st.header("ORYF")
-info_screen = st.empty()
-map_screen = st.empty()
 
 m = folium.Map(location = (45.404028, -75.544722), zoom_start = 12)
 
 st.subheader("Selecting Patches")
 
-info_screen.subheader("Loading map data...  Be patient this will take a while!")
-
-
+info_screen = st.empty()
+main_screen = st.empty()
 
 def get_geopackage():
 
@@ -130,28 +127,28 @@ def mapIt(df):
 
     return m
 
+with info_screen.container():
+    data_source_type = st.radio("Where do you want to get your data?", options = ["Geopackage", "All in Ottawa East", "From a file you select"])
 
-data_source_type = st.radio("Where do you want to get your data?", options = ["Geopackage", "All in Ottawa East", "From a file you select"])
+    if data_source_type == "Geopackage":
 
-if data_source_type == "Geopackage":
+        gdf = get_geopackage()
 
-    gdf = get_geopackage()
+    elif data_source_type == 'All in Ottawa East':
+        
+        gdf = get_all_data()
 
-elif data_source_type == 'All in Ottawa East':
-    
-    gdf = get_all_data()
+    else:
 
-else:
-
-    gdf = get_some_csv_data()
+        gdf = get_some_csv_data()
 
 
-test_if_df(gdf)
+# test_if_df(gdf)
 
 # gdf = gdf.set_crs(4326)
 
-if gdf is not None:
-    st.write("gdf crs = ", gdf.crs)
+# if gdf is not None:
+#     st.write("gdf crs = ", gdf.crs)
 
 gdf = gdf.to_crs(4326)
 
@@ -178,6 +175,8 @@ if filtered_df is not None:
 
 #get the number of rows in filtered_df
 filt_rows = filtered_df.shape[0]
+
+
 
 # setup a panel with 3 columns
 datacol1, datacol2, datacol3 = st.columns(3)
@@ -211,31 +210,38 @@ current_patch = filtered_df.iloc[ss["patch_number"]:ss["patch_number"]+1,:]
 
 #display the current patch data
 st.subheader("Current Patch ")
+
 st.write(current_patch)
 
 #set up buttons to do various tasks
 with button3:
     if st.button('SELECT Patch'):
 
+        current_patch['centroid'] = current_patch['geometry'].centroid
+
         if 'selected_df' not in ss:
+
             ss.selected_df = current_patch
 
         ss.selected_df = pd.concat([ss.selected_df, current_patch])
 
 
 with button4:
-    ss['selected_df'] = ss['selected_df'].drop_duplicates(subset=['PIN']) 
-    
-    # convert to CSV
-    csv = ss['selected_df'].to_csv(index=False)
 
-    # create a download button
-    st.download_button(
-        label='Download Selected',
-        data=csv,
-        file_name='selected.csv',
-        mime='text/csv'
-    )
+    if 'selected_df' in ss:
+    
+        ss['selected_df'] = ss['selected_df'].drop_duplicates(subset=['PIN']) 
+        
+        # convert to CSV
+        csv = ss['selected_df'].to_csv(index=False)
+
+        # create a download button
+        st.download_button(
+            label='Download Selected',
+            data=csv,
+            file_name='selected.csv',
+            mime='text/csv'
+        )
 
 
 with button5:
@@ -243,7 +249,7 @@ with button5:
         if st.button('Are you sure you want to clear the list of selected patches?'):
             del ss.selected_df
             
-       
+    
 m = mapIt(current_patch)
 
 if st.button("View a map of the selected pach.", key="selected"):
@@ -264,6 +270,6 @@ if 'selected_df' in ss:
 else:
     st.subheader("There are no selected patches yet.")
 
-info_screen.empty()
- 
+
+
 ##################################################
