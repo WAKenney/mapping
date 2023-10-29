@@ -223,6 +223,8 @@ patch_address = gpd.tools.reverse_geocode(current_patch['centroid'])
 #store the address in the current pacth df
 current_patch['address'] = patch_address.iloc[0,1]
 
+current_patch.drop('centroid', axis='columns', inplace=True)
+
 #display the current patch data
 st.subheader("Current Patch ")
 
