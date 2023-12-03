@@ -2,9 +2,11 @@ from GPSPhoto import gpsphoto
 import os
 import streamlit as st
 
-
-path = "C:/Users/pythonproject" # path to image folder
+path = st.sidebar.file_uploader("Upload a file", type="dir")
+if path is not None:
+    st.write("You selected the following folder:", path)
 
 for i in os.listdir(path):
-    data = gpsphoto.getGPSData(os.path.join(path,i))
-    print(i, data['Latitude'], data['Longitude'])
+    if i.endswith(".jpg"):
+        data = gpsphoto.getGPSData(os.path.join(path,i))
+        st.write(i, data['Latitude'], data['Longitude'])
